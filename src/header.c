@@ -24,3 +24,8 @@ bool write_file_header(FILE *file_ptr) {
 
   return true;
 }
+
+bool write_file_metadata() {
+
+  return true;
+}
