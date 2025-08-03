@@ -6,10 +6,11 @@
 #define MAGIC 124
 #define VERSION 1
 
-#define FILE_DATA_END   8800
-#define FILE_DATA_BEGIN 8910
-#define DIR_DATA_END    9900
-#define DIR_DATA_BEGIN  9810
+// using uint16_t
+#define FILE_DATA_END   60890
+#define FILE_DATA_BEGIN 60890
+#define DIR_DATA_END    60990
+#define DIR_DATA_BEGIN  60981
 
 struct file_medata {
   uint8_t name_len;
