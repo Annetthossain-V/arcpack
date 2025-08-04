@@ -10,3 +10,5 @@ bool file_handler(FILE* arc_ptr, char* file);
 bool dir_handler(FILE* arc_ptr, char* dir);
 
 extern char* base;
+
+long fsize(char* file);

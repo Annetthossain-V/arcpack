@@ -9,6 +9,9 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
+// 1kb
+#define CHUNK_SIZE 512 
+
 char* base = NULL;
 
 bool create_archive(char *file) {
@@ -31,6 +34,11 @@ bool create_archive(char *file) {
   stat = write_file_header(file_ptr); // write header
   if (!stat)
     return false;
+
+  // write dir name
+  // uint8_t len = (uint8_t) strlen(file);
+  // fwrite(&len, sizeof(uint8_t), 1, file_ptr);
+  // fwrite(file, sizeof(char), strlen(file), file_ptr);
 
   stat = directory_handle(file, file_ptr);
   if (!stat)
@@ -90,17 +98,44 @@ bool directory_handle(char* file, FILE* file_ptr) {
   return true;
 }
 
-bool file_handler(FILE *arc_ptr, char *file) {
-  printf("a %s\n", file);
- 
+bool file_handler(FILE *arc_ptr, char *file) { 
   // set new base
   char* new_base = (char*) malloc(strlen(file) + strlen(base));
   strcpy(new_base, base);
   strcat(new_base, file);
 
-  // get the size
+  printf("a %s\n", new_base);
   
+  // get the size
+  long size = fsize(new_base);
+  if (size < 0)
+    return false;
 
+  if (size > UINT32_MAX) {
+    fputs("file size larger than u32\n", stderr);
+    return false;
+  }
+
+  // write header 
+  if(!write_file_metadata(arc_ptr, file, new_base, (uint32_t)size))
+    return false;
+
+  // read/write content chunk by chunk
+  FILE* file_handle = fopen(new_base, "rb");
+  long bytes_read = 0;
+  uint16_t* data = NULL;
+  do {
+    // reading u16 meaning 2 bytes at a time
+    
+  } while (bytes_read < size || bytes_read != size);
+  
+  // write
+
+  fclose(file_handle);
+
+  // write end
+  if (!write_file_end(arc_ptr))
+    return false;
 
   free(new_base);
   return true;
@@ -112,4 +147,18 @@ bool dir_handler(FILE *arc_ptr, char *dir) {
 
   // reset base
   return true;
+}
+
+long fsize(char* file) {
+  FILE* ptr = fopen(file, "rb");
+  if (ptr == NULL) {
+    perror("Error opening file");
+    return -1;
+  }
+
+  fseek(ptr, 0, SEEK_END); // set position to end 
+  long size = ftell(ptr); // get current position 
+
+  fclose(ptr);
+  return size;
 }

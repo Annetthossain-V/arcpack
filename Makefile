@@ -9,3 +9,6 @@ all: build
 
 build:
 		$(CC) $(CFLAGS) $(SOURCE) -o arcpack
+
+clean:
+		rm -f arcpack *.arc
