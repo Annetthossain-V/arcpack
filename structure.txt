@@ -1,0 +1,3 @@
+{ A, r, c, P, a, c, k, VERSION, magic} in bytes
+{}
+
