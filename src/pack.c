@@ -32,7 +32,7 @@ bool create_archive(char *file) {
   if (!stat)
     return false;
 
-  stat = directory_handle(file, file_archive, file_ptr);
+  stat = directory_handle(file, file_ptr);
   if (!stat)
     return false;
 
@@ -42,7 +42,7 @@ bool create_archive(char *file) {
   return true;
 }
 
-bool directory_handle(char* file, char* file_archive, FILE* file_ptr) {
+bool directory_handle(char* file, FILE* file_ptr) {
   struct stat statbuf;
   int status = stat(file, &statbuf);
   if (status != 0) {
@@ -91,12 +91,25 @@ bool directory_handle(char* file, char* file_archive, FILE* file_ptr) {
 }
 
 bool file_handler(FILE *arc_ptr, char *file) {
+  printf("a %s\n", file);
+ 
+  // set new base
+  char* new_base = (char*) malloc(strlen(file) + strlen(base));
+  strcpy(new_base, base);
+  strcat(new_base, file);
 
+  // get the size
+  
+
+
+  free(new_base);
   return true;
 }
 
 bool dir_handler(FILE *arc_ptr, char *dir) {
+  // update base
+  
 
-
+  // reset base
   return true;
 }

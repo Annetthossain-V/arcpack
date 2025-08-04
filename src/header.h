@@ -22,7 +22,7 @@ struct file_medata {
 
 bool write_file_header(FILE* file_ptr);
 
-bool write_file_metadata();
+bool write_file_metadata(FILE* arc_ptr, char* name, char* base, uint32_t size);
 bool write_file_end();
 
 bool write_dir_metadata();

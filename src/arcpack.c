@@ -4,9 +4,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "globl.h"
-#include "pack.h"
-
 #if defined(_WIN64) || defined(_WIN32) || defined(WIN32) || defined(WIN64)
   #error "Target OS not supported!"
 #endif
@@ -23,7 +20,16 @@
   #error "Incompatible Compiler!"
 #endif
 
+#include "header.h"
+#include "globl.h"
+#include "pack.h"
+
 void arg_collector(uint8_t* mode, char** file, int argc, char** argv) {
+  if (strcmp(argv[1], "--version") == 0 || strcmp(argv[1], "-v") == 0) {
+    printf("ArcPack Version %d\n", VERSION);
+    exit(0);
+  }
+
   if (argc != 3) {
     fputs("Error! Argument format mismatch!\n", stderr);
     fputs("arcpack: <option> <file/dir>\n", stderr);

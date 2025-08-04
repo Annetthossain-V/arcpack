@@ -1,6 +1,6 @@
 # BSD Makefile
 CC = clang
-CFLAGS := -Wall -Wextra -O0 -g
+CFLAGS := -Wall -Wextra -O0 -g -DVBS -Wno-unused-parameter
 
 
 SOURCE!= ls src/*.c
