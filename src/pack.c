@@ -127,9 +127,8 @@ bool file_handler(FILE *arc_ptr, char *file) {
   do {
     // reading u16 meaning 2 bytes at a time
     
+
   } while (bytes_read < size || bytes_read != size);
-  
-  // write
 
   fclose(file_handle);
 
