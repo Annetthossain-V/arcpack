@@ -23,9 +23,9 @@ bool create_archive(char *file) {
   strcpy(file_archive, file);
   strcat(file_archive, ".arc");
 
-  // set base
-  strcpy(base, file);
-  strcat(base, "/");
+  // set base @deprecated
+  // strcpy(base, file);
+  // strcat(base, "/");
 
   FILE* file_ptr = fopen(file_archive, "wb"); // create the file
   if (file_ptr == NULL)
@@ -40,7 +40,7 @@ bool create_archive(char *file) {
   // fwrite(&len, sizeof(uint8_t), 1, file_ptr);
   // fwrite(file, sizeof(char), strlen(file), file_ptr);
 
-  stat = directory_handle(file, file_ptr);
+  stat = dir_handler(file_ptr, file);
   if (!stat)
     return false;
 
@@ -126,7 +126,8 @@ bool file_handler(FILE *arc_ptr, char *file) {
   uint16_t* data = NULL;
   do {
     // reading u16 meaning 2 bytes at a time
-    
+    // handle endianness?
+
 
   } while (bytes_read < size || bytes_read != size);
 
@@ -142,9 +143,18 @@ bool file_handler(FILE *arc_ptr, char *file) {
 
 bool dir_handler(FILE *arc_ptr, char *dir) {
   // update base
+  unsigned long added_base = 0;
+  if (base == NULL) {
+    
+  } 
+  else {
+    
+  }
+
   
 
   // reset base
+
   return true;
 }
 
