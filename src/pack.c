@@ -118,12 +118,31 @@ bool file_handler(FILE *arc_ptr, char *file) {
   // read/write content chunk by chunk
   FILE* file_handle = fopen(new_base, "rb");
   long bytes_read = 0;
-  uint16_t* data = NULL;
+
   do {
     // reading u16 meaning 2 bytes at a time
     // handle endianness?
 
+    uint16_t* data_chunk = malloc((CHUNK_SIZE * 2) + 24);
+    __auto_type read = fread(data_chunk, sizeof(uint16_t), CHUNK_SIZE, file_handle);
+    
+    __auto_type written = fwrite(data_chunk, sizeof(uint16_t), read, arc_ptr);
+    
+    if (written != read) {
+      perror("unable to write read data!");
+      return false;
+    }
 
+    if (read < CHUNK_SIZE) {
+      if (!feof(file_handle)) {
+        perror("unable to read data file");
+        return false;
+      }
+      break;
+    }
+
+    bytes_read += read;
+    free(data_chunk);
   } while (bytes_read < size || bytes_read != size);
 
   fclose(file_handle);
