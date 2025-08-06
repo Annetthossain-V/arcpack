@@ -49,7 +49,9 @@ bool directory_handle(char* file, FILE* file_ptr) {
   struct stat statbuf;
   int status = stat(file, &statbuf);
   if (status != 0) {
-    perror("Error getting file status");
+    puts(file);
+    perror("Error getting file status"); // causing errors
+    // could possibly be '.' & '..' dirs
     return false;
   }
 
