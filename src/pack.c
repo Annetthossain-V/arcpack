@@ -13,11 +13,11 @@
 #define CHUNK_SIZE 512 
 
 char* base = NULL;
+unsigned long base_len = 0;
 
 bool create_archive(char *file) {
   bool stat = false;
   char* file_archive = (char*) malloc(strlen(file) + 5);
-  base = (char*) malloc(strlen(file) + 2);
 
   // append .arc to file name
   strcpy(file_archive, file);
@@ -34,11 +34,6 @@ bool create_archive(char *file) {
   stat = write_file_header(file_ptr); // write header
   if (!stat)
     return false;
-
-  // write dir name
-  // uint8_t len = (uint8_t) strlen(file);
-  // fwrite(&len, sizeof(uint8_t), 1, file_ptr);
-  // fwrite(file, sizeof(char), strlen(file), file_ptr);
 
   stat = dir_handler(file_ptr, file);
   if (!stat)
@@ -143,15 +138,39 @@ bool file_handler(FILE *arc_ptr, char *file) {
 
 bool dir_handler(FILE *arc_ptr, char *dir) {
   // update base
-  unsigned long added_base = 0;
+  unsigned long str_len = 0;
+  unsigned long dir_len = strlen(dir);
   if (base == NULL) {
-    
+    base = (char*) malloc(dir_len + 5);
+    base_len = dir_len;
+
+    strcpy(base, dir);
+    strcat(base, "/");
+    str_len = strlen(base);
   } 
   else {
-    
+    str_len = strlen(base);
+    base = (char*) realloc(base, (base_len + dir_len + 5));
+    base_len += dir_len;
+
+    strcat(base, dir);
+    strcat(base, "/");
   }
 
+  // write dir entry header
+  if (!write_dir_metadata(arc_ptr, dir, base))
+    return false;
+  
+  // make THE CALL 
+  if (!directory_handle(dir, arc_ptr))
+    return false;
+
+  // write dir entry end 
+  if (!write_dir_end(arc_ptr))
+    return false;
+
   // reset base
+  base[str_len] = '\0';
 
   return true;
 }
