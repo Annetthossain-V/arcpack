@@ -29,9 +29,15 @@ bool write_file_header(FILE *file_ptr) {
   return true;
 }
 
+#define CHK_MACRO(a, b, c) \
+        if (a < b)         \
+          goto c
+
 bool write_file_metadata(FILE* arc_ptr, char* name, char* base, uint32_t size) {
-  if (arc_ptr == NULL || name == NULL || base == NULL)
+  if (arc_ptr == NULL || name == NULL || base == NULL) {
+    fputs("NULL ptr!\n", stderr);
     return false;
+  }
 
   unsigned long write = 0;
 
@@ -41,38 +47,31 @@ bool write_file_metadata(FILE* arc_ptr, char* name, char* base, uint32_t size) {
 
   // write metadata
   write = fwrite(&name_len, sizeof(uint8_t), 1, arc_ptr);
-  if (write < 1)
-    goto err;
+  CHK_MACRO(write, 1, err);
 
   write = fwrite(&path_len, sizeof(uint16_t), 1, arc_ptr);
-  if (write < 1)
-    goto err;
+  CHK_MACRO(write, 1, err);
 
   write = fwrite(&file_size, sizeof(uint32_t), 1, arc_ptr);
-  if (write < 1)
-    goto err;
+  CHK_MACRO(write, 1, err);
 
   // write name and base/path 
   write = fwrite(name, sizeof(char), name_len, arc_ptr); // this is writting 
-  if (write < name_len)
-    goto err;
+  CHK_MACRO(write, name_len, err);
 
   write = fwrite(base, sizeof(char), path_len, arc_ptr); // the null terminator?
-  if (write < path_len)
-    goto err;
+  CHK_MACRO(write, path_len, err);
 
   uint16_t data_begin = FILE_DATA_BEGIN;
   write = fwrite(&data_begin, sizeof(uint16_t), 1, arc_ptr);
-  if (write < 1)
-    goto err;
+  CHK_MACRO(write, 1, err);
 
-  goto ret;
+  // return 
+  return true;
+
 err:
   perror("Unable to write to file");
   return false;
-
-ret:
-  return true;
 }
 
 bool write_file_end(FILE* arc_ptr) {

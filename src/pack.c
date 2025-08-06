@@ -151,8 +151,6 @@ bool dir_handler(FILE *arc_ptr, char *dir) {
     
   }
 
-  
-
   // reset base
 
   return true;

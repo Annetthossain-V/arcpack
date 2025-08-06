@@ -55,6 +55,9 @@ int main(int argc, char** argv) {
 
   arg_collector(&mode, &file, argc, argv);
 
+  if (strcmp(file, "") == 0 || strcmp(file, " ") == 0)
+    return 1;
+
   bool stat = false;
   switch (mode) {
     case MODE_PACK:
