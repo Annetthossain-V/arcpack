@@ -1,7 +1,10 @@
 # BSD Makefile
-CC = clang
-CFLAGS := -Wall -Wextra -O0 -g -DVBS -Wno-unused-parameter
 
+# target linux 
+# -target x86_64-pc-linux-gnu
+
+CC = clang
+CFLAGS := -Wall -Wextra -O0 -g -Wno-unused-parameter
 
 SOURCE!= ls src/*.c
 

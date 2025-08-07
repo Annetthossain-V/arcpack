@@ -23,6 +23,7 @@
 #include "header.h"
 #include "globl.h"
 #include "pack.h"
+#include "unpack.h"
 
 void arg_collector(uint8_t* mode, char** file, int argc, char** argv) {
   if (strcmp(argv[1], "--version") == 0 || strcmp(argv[1], "-v") == 0) {
@@ -33,12 +34,17 @@ void arg_collector(uint8_t* mode, char** file, int argc, char** argv) {
   if (argc != 3) {
     fputs("Error! Argument format mismatch!\n", stderr);
     fputs("arcpack: <option> <file/dir>\n", stderr);
+    fputs("option: \n", stderr);
+    fputs(" -c to compress\n", stderr);
+    fputs(" -z to uncompress\n", stderr);
     exit(1);
   }
 
   if (strcmp(argv[1], "-c") == 0)
     *mode = MODE_PACK;
   else if (strcmp(argv[1], "-z") == 0)
+    *mode = MODE_UPACK;
+  else if (strcmp(argv[1], "-d") == 0)
     *mode = MODE_UPACK;
   else 
     { EPQ("Unrecognised Option\n"); }
@@ -52,7 +58,7 @@ void arg_collector(uint8_t* mode, char** file, int argc, char** argv) {
 int main(int argc, char** argv) {
   uint8_t mode = 0;
   char* file;
-
+  
   arg_collector(&mode, &file, argc, argv);
 
   if (strcmp(file, "") == 0 || strcmp(file, " ") == 0)
@@ -64,6 +70,7 @@ int main(int argc, char** argv) {
       stat = create_archive(file);
       break;
     case MODE_UPACK:
+      stat = extract_archive(file);
       break;
   }
 
@@ -75,3 +82,11 @@ int main(int argc, char** argv) {
   free(file);
   return 0;
 }
+
+int which_endian() {
+  volatile uint32_t i = 0x01234567;
+  return (*((uint8_t*)(&i))) == 0x67;
+}
+
+
+

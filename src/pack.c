@@ -49,7 +49,7 @@ bool directory_handle(char* file, FILE* file_ptr) {
   struct stat statbuf;
   int status = stat(file, &statbuf);
   if (status != 0) {
-    puts(file);
+    // puts(file);
     perror("Error getting file status"); // causing errors
     // could possibly be '.' & '..' dirs
     return false;
@@ -183,7 +183,7 @@ bool dir_handler(FILE *arc_ptr, char *dir) {
     return false;
   
   // make THE CALL 
-  if (!directory_handle(dir, arc_ptr))
+  if (!directory_handle(base, arc_ptr))
     return false;
 
   // write dir entry end 
