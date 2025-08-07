@@ -1,3 +1,25 @@
-{ A, r, c, P, a, c, k, VERSION, magic} in bytes
-{}
+char { A, r, c, P, a, c, k, VERSION, magic, '\0' }
 
+// dir entry start
+uint16 { Dir_Begin_Sig }
+uint8 { name_len }
+uint16 { path_len }
+char* { name, base }
+uint16 { DIR_DATA_BEGIN }
+
+// file data start
+uint16 { FILE_BEGIN_SIG }
+uint8 { name_len }
+uint16 { path_len }
+uint32 { file_size }
+char* { name, base }
+uint16 { FILE_DATA_BEGIN }
+
+// file data 
+uint16[] { data_chunk... }
+
+// file entry end 
+uint16 { FILE_DATA_END }
+
+// dir entry end
+uint16 { DIR_DATA_END }
