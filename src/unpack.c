@@ -35,7 +35,16 @@ bool extract_archive(char* file) {
     return false;
   }
 
+  if (!read_file_header(arc_ptr)) {
+    fprintf(stderr, "%s invalid or corrupted file!\n", file);
+    return false;
+  }
   
 
+
   return true;
+}
+
+bool sig_check() {
+
 }
