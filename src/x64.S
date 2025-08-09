@@ -8,12 +8,11 @@
 
 .text
 swap16:
-  # move edi to ax
   mov ax, di
-  
-  xor ax, ax
+  xchg ah, al
   ret
 
 swap32:
-  xor edi, edi
+  mov eax, edi
+  bswap eax
   ret
