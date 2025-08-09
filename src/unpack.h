@@ -10,7 +10,7 @@
 
 bool extract_archive(char* file);
 
-bool sig_check();
+bool sig_check(FILE* arc_ptr, char* name);
 
-bool read_file();
-bool read_dir();
+bool read_file(FILE* arc_ptr);
+bool read_dir(FILE* arc_ptr);

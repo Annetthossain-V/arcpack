@@ -13,3 +13,9 @@
 #define LITTLE_ENDIAN_LCL 1
 
 int which_endian();
+
+#define FREAD_MACRO(ptr, size, count, fp)           \
+        if (fread(ptr, size, count, fp) != count) { \
+          fputs("Error Reading File!\n", stderr);   \
+          return false;                             \
+        }

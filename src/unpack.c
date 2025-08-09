@@ -13,6 +13,9 @@
 #include "header.h"
 #include "readh.h"
 
+static uint32_t file_len = 0; // in byte
+static uint32_t curr_len = 0;
+
 bool extract_archive(char* file) {
   if (file == NULL)
     return false;
@@ -40,11 +43,36 @@ bool extract_archive(char* file) {
     return false;
   }
   
-
+  if (!sig_check(arc_ptr, file)) {
+    fprintf(stderr, "error reading entry header!\n");
+    return false;
+  }
 
   return true;
 }
 
-bool sig_check() {
+bool sig_check(FILE* arc_ptr, char* name) {
+  // init stuff
+  if (file_len == 0) {
+    
+  }
 
+  if (curr_len >= file_len)
+    return true;
+  
+
+  uint16_t sig;
+  FREAD_MACRO(&sig, sizeof(uint16_t), 1, arc_ptr)
+
+  switch (sig) {
+    case FILE_BEGIN:
+      break;
+    case DIR_BEGIN:
+      break;
+    default:
+      return false;
+  }
+
+  return true;
 }
+
