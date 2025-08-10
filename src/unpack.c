@@ -13,8 +13,7 @@
 #include "header.h"
 #include "readh.h"
 
-static uint32_t file_len = 0; // in byte
-static uint32_t curr_len = 0;
+static long size;
 
 bool extract_archive(char* file) {
   if (file == NULL)
@@ -42,8 +41,9 @@ bool extract_archive(char* file) {
     fprintf(stderr, "%s invalid or corrupted file!\n", file);
     return false;
   }
-  
-  if (!sig_check(arc_ptr, file)) {
+ 
+  size = fsize(file);
+  if (!sig_check(arc_ptr)) {
     fprintf(stderr, "error reading entry header!\n");
     return false;
   }
@@ -51,28 +51,56 @@ bool extract_archive(char* file) {
   return true;
 }
 
-bool sig_check(FILE* arc_ptr, char* name) {
-  // init stuff
-  if (file_len == 0) {
-    
-  }
-
-  if (curr_len >= file_len)
-    return true;
+bool sig_check(FILE* arc_ptr) {
   
+  long curr_read = ftell(arc_ptr);
+  if (curr_read >= size)
+    return true;
 
   uint16_t sig;
   FREAD_MACRO(&sig, sizeof(uint16_t), 1, arc_ptr)
+  bool stat = false;
 
   switch (sig) {
     case FILE_BEGIN:
       break;
     case DIR_BEGIN:
+      stat = read_dir(arc_ptr);
       break;
     default:
       return false;
   }
 
+  if (!stat)
+    return false;
+
   return true;
 }
 
+bool read_dir(FILE *arc_ptr) {
+ 
+  // read dir header
+  struct dir_metadata dir_header;
+  if(!read_dir_metadata(arc_ptr, &dir_header)) {
+    fputs("unable to read dir header!\n", stderr);
+    return false;
+  }
+
+  uint16_t dir_magic = 0;
+  FREAD_MACRO(&dir_magic, sizeof(uint16_t), 1, arc_ptr)
+  if (dir_magic != DIR_DATA_BEGIN) {
+    fputs("invalid dir magic!\n", stderr);
+    return false;
+  }
+  
+  // dir data end is left
+
+  free(dir_header.name);
+  free(dir_header.base);
+  return true;
+}
+
+bool read_file(FILE* arc_ptr) {
+
+  return false;
+}

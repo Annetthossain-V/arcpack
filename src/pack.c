@@ -8,6 +8,7 @@
 #include <sys/dirent.h>
 #include <sys/stat.h>
 #include <dirent.h>
+#include "x64.h"
 
 // 1kb
 #define CHUNK_SIZE 512 
@@ -120,12 +121,13 @@ bool file_handler(FILE *arc_ptr, char *file) {
   // read/write content chunk by chunk
   FILE* file_handle = fopen(new_base, "rb");
   long bytes_read = 0;
+  uint16_t* data_chunk = (uint16_t*) malloc((CHUNK_SIZE * 2) + 24);
 
   do {
     // reading u16 meaning 2 bytes at a time
     // handle endianness?
 
-    uint16_t* data_chunk = malloc((CHUNK_SIZE * 2) + 24);
+    zero_arr16(data_chunk, CHUNK_SIZE); // this isn't even needed
     __auto_type read = fread(data_chunk, sizeof(uint16_t), CHUNK_SIZE, file_handle);
     
     __auto_type written = fwrite(data_chunk, sizeof(uint16_t), read, arc_ptr);
@@ -144,9 +146,9 @@ bool file_handler(FILE *arc_ptr, char *file) {
     }
 
     bytes_read += read;
-    free(data_chunk);
   } while (bytes_read < size || bytes_read != size);
 
+  free(data_chunk);
   fclose(file_handle);
 
   // write end
@@ -177,6 +179,8 @@ bool dir_handler(FILE *arc_ptr, char *dir) {
     strcat(base, dir);
     strcat(base, "/");
   }
+
+  printf("a %s\n", base);
 
   // write dir entry header
   if (!write_dir_metadata(arc_ptr, dir, base))
