@@ -26,6 +26,10 @@
 #include "unpack.h"
 
 void arg_collector(uint8_t* mode, char** file, int argc, char** argv) {
+
+  if (argc < 2)
+    exit(1);
+
   if (strcmp(argv[1], "--version") == 0 || strcmp(argv[1], "-v") == 0) {
     printf("ArcPack Version %d\n", VERSION);
     exit(0);
