@@ -13,7 +13,6 @@
 #include "pack.h"
 #include "header.h"
 #include "readh.h"
-#include "x64.h"
 
 #ifndef CHUNK_SIZE
   // 1 kb
@@ -161,13 +160,22 @@ bool read_file(FILE *arc_ptr) {
     return false;
   }
   
-  uint32_t read = file_header.file_size; // in bytes
+  uint32_t file_size = file_header.file_size; // in bytes
   uint8_t* data_chunk = (uint8_t*) malloc(CHUNK_SIZE + 2);
 
-  while (read > 0) {
-
+  while (file_size > 0) {
     
+    unsigned long size = CHUNK_SIZE;
+    if (file_size < CHUNK_SIZE)
+      size = file_size;
 
+    unsigned long read = fread(data_chunk, sizeof(uint8_t), size, arc_ptr);
+    if (fwrite(data_chunk, sizeof(uint8_t), read, file_handle) != read) {
+      perror("unable to write to newly created file");
+      return false;
+    }
+   // write(1, data_chunk, read);
+    file_size -= read;
   }
 
   free(data_chunk);

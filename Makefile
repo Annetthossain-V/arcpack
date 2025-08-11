@@ -7,12 +7,11 @@ CC = clang
 CFLAGS := -Wall -Wextra -O0 -g
 
 SOURCE != ls src/*.c
-CODE_ASM != ls src/*.S
 
 all: build
 
 build:
-		$(CC) $(CFLAGS) $(SOURCE) $(CODE_ASM) -o arcpack
+		$(CC) $(CFLAGS) $(SOURCE) -o arcpack
 
 clean:
 		rm -f arcpack *.arc

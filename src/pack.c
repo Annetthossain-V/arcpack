@@ -8,7 +8,6 @@
 #include <sys/dirent.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#include "x64.h"
 
 // 1kb
 #define CHUNK_SIZE 512 
