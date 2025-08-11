@@ -11,7 +11,15 @@ struct dir_metadata {
   char* base;
 } __attribute__((packed));
 
+struct file_metadata {
+  uint8_t name_len;
+  uint16_t path_len;
+  uint32_t file_size;
+  char* name;
+  char* base;
+} __attribute__((packed));
+
 bool read_file_header(FILE* arc_ptr);
 
-bool read_file_metadata();
+bool read_file_metadata(FILE* arc_ptr, struct file_metadata* info);
 bool read_dir_metadata(FILE* arc_ptr, struct dir_metadata* info);

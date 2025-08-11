@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #include "unpack.h"
 #include "globl.h"
@@ -63,10 +64,15 @@ bool sig_check(FILE* arc_ptr) {
 
   switch (sig) {
     case FILE_BEGIN:
+      stat = read_file(arc_ptr);
       break;
     case DIR_BEGIN:
       stat = read_dir(arc_ptr);
       break;
+    case DIR_DATA_END:
+    case FILE_DATA_END:
+      fseek(arc_ptr, -2, SEEK_CUR);
+      return true;
     default:
       return false;
   }
@@ -92,15 +98,64 @@ bool read_dir(FILE *arc_ptr) {
     fputs("invalid dir magic!\n", stderr);
     return false;
   }
-  
-  // dir data end is left
+ 
+  // print name to console
+  printf("x %s\n", dir_header.base);
+
+  // make the dir 
+  mode_t permission = S_IRWXU | S_IRWXG | S_IRWXO;
+  if (mkdir(dir_header.base, permission) != 0) {
+    perror("unable to create directory!");
+    return false;
+  }
+
+  // make the call
+  if (!sig_check(arc_ptr)) {
+    fputs("unpack.c::sigcheck something went wrong!\n", stderr);
+    return false;
+  }
+
+  // read dir data end
+  uint16_t dir_end_magic;
+  FREAD_MACRO(&dir_end_magic, sizeof(uint16_t), 1, arc_ptr)
+  if (dir_end_magic != DIR_DATA_END) {
+    fputs("invalid dir end magic!\n", stderr);
+    return false;
+  }
 
   free(dir_header.name);
   free(dir_header.base);
   return true;
 }
 
-bool read_file(FILE* arc_ptr) {
+bool read_file(FILE *arc_ptr) {
 
-  return false;
+  // read file header
+  struct file_metadata file_header;
+  if (!read_file_metadata(arc_ptr, &file_header)) {
+    fputs("unable to read file header!\n", stderr);
+    return false;
+  }
+
+  // read magic
+  uint16_t file_magic;
+  FREAD_MACRO(&file_magic, sizeof(uint16_t), 1, arc_ptr)
+  if (file_magic != FILE_DATA_BEGIN) {
+    fputs("invalid file magic!\n", stderr);
+    return false;
+  }
+  
+  // read file data_end 
+  uint16_t file_end_magic;
+  FREAD_MACRO(&file_end_magic, sizeof(uint16_t), 1, arc_ptr)
+  if (file_end_magic != FILE_DATA_END) {
+    fputs("invalid file data end!\n", stderr);
+    return false;
+  }
+
+  // make the call
+
+  free(file_header.name);
+  free(file_header.base);
+  return true;
 }
