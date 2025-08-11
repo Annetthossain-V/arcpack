@@ -57,6 +57,8 @@ bool extract_archive(char* file) {
   return true;
 }
 
+
+// seems to have problem with recursion with dir end magic
 bool sig_check(FILE* arc_ptr) {
   
   if (feof(arc_ptr))
@@ -116,10 +118,10 @@ bool read_dir(FILE *arc_ptr) {
     perror("unable to create directory!");
     return false;
   }
-
-  // make the call
+  
+  // make the call 
   if (!sig_check(arc_ptr)) {
-    fputs("unpack.c::sigcheck something went wrong!\n", stderr);
+    fputs("unpack.c::sig_check something went wrong!\n", stderr);
     return false;
   }
 

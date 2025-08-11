@@ -4,7 +4,7 @@
 # -target x86_64-pc-linux-gnu
 
 CC = clang
-CFLAGS := -Wall -Wextra -O2 -march=native
+CFLAGS := -Wall -Wextra -O2 
 
 SOURCE != ls src/*.c
 
