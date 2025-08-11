@@ -8,5 +8,11 @@
 
 .text
 conv32:
-
+  mov eax, edi
+  bswap eax
+  ret
 conv16:
+  mov edi, edi
+  mov ax, di 
+  xchg ah, al
+  ret

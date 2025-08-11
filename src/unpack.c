@@ -118,7 +118,8 @@ bool read_dir(FILE *arc_ptr) {
     perror("unable to create directory!");
     return false;
   }
-  
+ 
+retry:
   // make the call 
   if (!sig_check(arc_ptr)) {
     fputs("unpack.c::sig_check something went wrong!\n", stderr);
@@ -128,6 +129,10 @@ bool read_dir(FILE *arc_ptr) {
   // read dir data end
   uint16_t dir_end_magic;
   FREAD_MACRO(&dir_end_magic, sizeof(uint16_t), 1, arc_ptr)
+  if (dir_end_magic == FILE_BEGIN) {
+    fseek(arc_ptr, -2, SEEK_CUR);
+    goto retry; // messing up the file names for some reason
+  }
   if (dir_end_magic != DIR_DATA_END) {
     fputs("invalid dir end magic!\n", stderr);
     return false;
