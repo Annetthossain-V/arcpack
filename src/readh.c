@@ -50,8 +50,11 @@ bool read_dir_metadata(FILE *arc_ptr, struct dir_metadata* info) {
   FREAD_MACRO(&info->name_len, sizeof(uint8_t), 1, arc_ptr);
   FREAD_MACRO(&info->path_len, sizeof(uint16_t), 1, arc_ptr);
   
-  info->name = (char*) malloc(info->name_len);
-  info->base = (char*) malloc(info->path_len);
+  info->name = (char*) malloc(info->name_len + 1);
+  info->base = (char*) malloc(info->path_len + 1);
+
+  info->name[info->name_len] = '\0';
+  info->base[info->path_len] = '\0';
 
   FREAD_MACRO(info->name, sizeof(char), info->name_len, arc_ptr);
   FREAD_MACRO(info->base, sizeof(char), info->path_len, arc_ptr);
@@ -65,8 +68,11 @@ bool read_file_metadata(FILE *arc_ptr, struct file_metadata *info) {
   
   FREAD_MACRO(&info->file_size, sizeof(uint32_t), 1, arc_ptr);
 
-  info->name = (char*) malloc(info->name_len);
-  info->base = (char*) malloc(info->path_len);
+  info->name = (char*) malloc(info->name_len + 1);
+  info->base = (char*) malloc(info->path_len + 1);
+  
+  info->name[info->name_len] = '\0';
+  info->base[info->path_len] = '\0'; 
 
   FREAD_MACRO(info->name, sizeof(char), info->name_len, arc_ptr);
   FREAD_MACRO(info->base, sizeof(char), info->path_len, arc_ptr);

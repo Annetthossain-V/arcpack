@@ -129,7 +129,7 @@ retry:
   // read dir data end
   uint16_t dir_end_magic;
   FREAD_MACRO(&dir_end_magic, sizeof(uint16_t), 1, arc_ptr)
-  if (dir_end_magic == FILE_BEGIN) {
+  if (dir_end_magic == FILE_BEGIN || dir_end_magic == DIR_BEGIN) {
     fseek(arc_ptr, -2, SEEK_CUR);
     goto retry; // messing up the file names for some reason
   }
