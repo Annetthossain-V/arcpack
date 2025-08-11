@@ -4,7 +4,7 @@
 # -target x86_64-pc-linux-gnu
 
 CC = clang
-CFLAGS := -Wall -Wextra -O0 -g -Wno-unused-parameter
+CFLAGS := -Wall -Wextra -O0 -g
 
 SOURCE != ls src/*.c
 CODE_ASM != ls src/*.S

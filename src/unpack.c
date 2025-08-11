@@ -13,6 +13,12 @@
 #include "pack.h"
 #include "header.h"
 #include "readh.h"
+#include "x64.h"
+
+#ifndef CHUNK_SIZE
+  // 1 kb
+  #define CHUNK_SIZE 512
+#endif
 
 static long size;
 
@@ -54,7 +60,10 @@ bool extract_archive(char* file) {
 
 bool sig_check(FILE* arc_ptr) {
   
-  long curr_read = ftell(arc_ptr);
+  if (feof(arc_ptr))
+    return true;
+
+  const long curr_read = ftell(arc_ptr);
   if (curr_read >= size)
     return true;
 
@@ -103,7 +112,7 @@ bool read_dir(FILE *arc_ptr) {
   printf("x %s\n", dir_header.base);
 
   // make the dir 
-  mode_t permission = S_IRWXU | S_IRWXG | S_IRWXO;
+  const mode_t permission = S_IRWXU | S_IRWXG | S_IRWXO;
   if (mkdir(dir_header.base, permission) != 0) {
     perror("unable to create directory!");
     return false;
@@ -144,7 +153,27 @@ bool read_file(FILE *arc_ptr) {
     fputs("invalid file magic!\n", stderr);
     return false;
   }
+ 
+  // read file data
+  FILE* file_handle = fopen(file_header.base, "wb");
+  if (file_handle == NULL) {
+    fprintf(stderr, "unable to create file %s\n", file_header.base);
+    return false;
+  }
   
+  uint32_t read = file_header.file_size;
+  uint16_t* data_chunk = (uint16_t*) malloc((CHUNK_SIZE * 2) + 2);
+
+  while (read > 0) {
+    zero_arr16(data_chunk, CHUNK_SIZE);
+    
+
+    read -= (7 * 2);
+  }
+
+  free(data_chunk);
+  fclose(file_handle);
+
   // read file data_end 
   uint16_t file_end_magic;
   FREAD_MACRO(&file_end_magic, sizeof(uint16_t), 1, arc_ptr)
@@ -154,6 +183,10 @@ bool read_file(FILE *arc_ptr) {
   }
 
   // make the call
+  if (!sig_check(arc_ptr)) {
+    fprintf(stderr, "sigcheck: recursive call failed");
+    return false;
+  }
 
   free(file_header.name);
   free(file_header.base);
