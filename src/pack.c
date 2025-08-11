@@ -121,16 +121,11 @@ bool file_handler(FILE *arc_ptr, char *file) {
   // read/write content chunk by chunk
   FILE* file_handle = fopen(new_base, "rb");
   long bytes_read = 0;
-  uint16_t* data_chunk = (uint16_t*) malloc((CHUNK_SIZE * 2) + 24);
+  uint8_t* data_chunk = (uint8_t*) malloc(CHUNK_SIZE + 3);
 
   do {
-    // reading u16 meaning 2 bytes at a time
-    // handle endianness?
-
-    zero_arr16(data_chunk, CHUNK_SIZE); // this isn't even needed
-    __auto_type read = fread(data_chunk, sizeof(uint16_t), CHUNK_SIZE, file_handle);
-    
-    __auto_type written = fwrite(data_chunk, sizeof(uint16_t), read, arc_ptr);
+    __auto_type read = fread(data_chunk, sizeof(uint8_t), CHUNK_SIZE, file_handle);
+    __auto_type written = fwrite(data_chunk, sizeof(uint8_t), read, arc_ptr);
     
     if (written != read) {
       perror("unable to write read data!");

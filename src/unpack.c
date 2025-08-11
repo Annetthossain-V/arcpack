@@ -161,14 +161,13 @@ bool read_file(FILE *arc_ptr) {
     return false;
   }
   
-  uint32_t read = file_header.file_size;
-  uint16_t* data_chunk = (uint16_t*) malloc((CHUNK_SIZE * 2) + 2);
+  uint32_t read = file_header.file_size; // in bytes
+  uint8_t* data_chunk = (uint8_t*) malloc(CHUNK_SIZE + 2);
 
   while (read > 0) {
-    zero_arr16(data_chunk, CHUNK_SIZE);
+
     
 
-    read -= (7 * 2);
   }
 
   free(data_chunk);
