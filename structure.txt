@@ -16,7 +16,7 @@ char* { name, base }
 uint16 { FILE_DATA_BEGIN }
 
 // file data 
-uint16[] { data_chunk... }
+uint8[] { data_chunk... }
 
 // file entry end 
 uint16 { FILE_DATA_END }

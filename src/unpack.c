@@ -152,7 +152,10 @@ bool read_file(FILE *arc_ptr) {
     fputs("invalid file magic!\n", stderr);
     return false;
   }
- 
+
+  // print output to console
+  printf("x %s\n", file_header.base);
+
   // read file data
   FILE* file_handle = fopen(file_header.base, "wb");
   if (file_handle == NULL) {
@@ -164,7 +167,6 @@ bool read_file(FILE *arc_ptr) {
   uint8_t* data_chunk = (uint8_t*) malloc(CHUNK_SIZE + 2);
 
   while (file_size > 0) {
-    
     unsigned long size = CHUNK_SIZE;
     if (file_size < CHUNK_SIZE)
       size = file_size;
