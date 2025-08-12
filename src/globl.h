@@ -14,8 +14,14 @@
 
 int which_endian();
 
-#define FREAD_MACRO(ptr, size, count, fp)           \
-        if (fread(ptr, size, count, fp) != count) { \
-          fputs("Error Reading File!\n", stderr);   \
-          return false;                             \
+#define FREAD_MACRO(ptr, size, count, fp)             \
+        if (fread(ptr, size, count, fp) != count) {   \
+          perror("error reading file");               \
+          return false;                               \
+        }
+
+#define FWRITE_MACRO(ptr, size, count, fp)              \
+        if (fwrite(ptr, size, count, fp) != count) {    \
+            perror("error writing to file");            \
+            return false;                               \
         }

@@ -1,4 +1,5 @@
 #include "header.h"
+#include "globl.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -29,9 +30,6 @@ bool write_file_header(FILE *file_ptr) {
   return true;
 }
 
-#define CHK_MACRO(a, b, c) \
-        if (a < b)         \
-          goto c
 
 bool write_file_metadata(FILE* arc_ptr, char* name, char* base, uint32_t size) {
   if (arc_ptr == NULL || name == NULL || base == NULL) {
@@ -39,43 +37,26 @@ bool write_file_metadata(FILE* arc_ptr, char* name, char* base, uint32_t size) {
     return false;
   }
 
-  unsigned long write = 0;
-
   uint16_t File_Begin_Sig = FILE_BEGIN;
   uint8_t name_len = (uint8_t) strlen(name);
   uint16_t path_len = (uint16_t) strlen(base);
   uint32_t file_size = size;
 
   // write metadata
-  write = fwrite(&File_Begin_Sig, sizeof(uint16_t), 1, arc_ptr);
-  CHK_MACRO(write, 1, err);
+  FWRITE_MACRO(&File_Begin_Sig, sizeof(uint16_t), 1, arc_ptr);
 
-  write = fwrite(&name_len, sizeof(uint8_t), 1, arc_ptr);
-  CHK_MACRO(write, 1, err);
-
-  write = fwrite(&path_len, sizeof(uint16_t), 1, arc_ptr);
-  CHK_MACRO(write, 1, err);
-
-  write = fwrite(&file_size, sizeof(uint32_t), 1, arc_ptr);
-  CHK_MACRO(write, 1, err);
+  FWRITE_MACRO(&name_len, sizeof(uint8_t), 1, arc_ptr);
+  FWRITE_MACRO(&path_len, sizeof(uint16_t), 1, arc_ptr);
+  FWRITE_MACRO(&file_size, sizeof(uint32_t), 1, arc_ptr);
 
   // write name and base/path 
-  write = fwrite(name, sizeof(char), name_len, arc_ptr); // this is writting 
-  CHK_MACRO(write, name_len, err);
-
-  write = fwrite(base, sizeof(char), path_len, arc_ptr); // the null terminator?
-  CHK_MACRO(write, path_len, err);                       // no, it is not
+  FWRITE_MACRO(name, sizeof(char), name_len, arc_ptr);
+  FWRITE_MACRO(base, sizeof(char), path_len, arc_ptr);
 
   uint16_t data_begin = FILE_DATA_BEGIN;
-  write = fwrite(&data_begin, sizeof(uint16_t), 1, arc_ptr);
-  CHK_MACRO(write, 1, err);
+  FWRITE_MACRO(&data_begin, sizeof(uint16_t), 1, arc_ptr);
 
-  // return 
   return true;
-
-err:
-  perror("Unable to write to file");
-  return false;
 }
 
 bool write_dir_metadata(FILE *arc_ptr, char *name, char *base) {
@@ -84,39 +65,25 @@ bool write_dir_metadata(FILE *arc_ptr, char *name, char *base) {
     return false;
   }
 
-  unsigned long write = 0;
 
   uint16_t Dir_Begin_Sig = DIR_BEGIN;
   uint8_t name_len = (uint8_t) strlen(name);
   uint16_t path_len = (uint16_t) strlen(base);
 
   // write metadata
-  write = fwrite(&Dir_Begin_Sig, sizeof(uint16_t), 1, arc_ptr);
-  CHK_MACRO(write, 1, err);
+  FWRITE_MACRO(&Dir_Begin_Sig, sizeof(uint16_t), 1, arc_ptr);  
 
-  write = fwrite(&name_len, sizeof(uint8_t), 1, arc_ptr);
-  CHK_MACRO(write, 1, err);
+  FWRITE_MACRO(&name_len, sizeof(uint8_t), 1, arc_ptr);
+  FWRITE_MACRO(&path_len, sizeof(uint16_t), 1, arc_ptr);
 
-  write = fwrite(&path_len, sizeof(uint16_t), 1, arc_ptr);
-  CHK_MACRO(write, 1, err);
+  FWRITE_MACRO(name, sizeof(char), name_len, arc_ptr);
 
-  write = fwrite(name, sizeof(char), name_len, arc_ptr);
-  CHK_MACRO(write, name_len, err);
-
-  write = fwrite(base, sizeof(char), path_len, arc_ptr);
-  CHK_MACRO(write, path_len, err);
+  FWRITE_MACRO(base, sizeof(char), path_len, arc_ptr);
 
   uint16_t data_start = DIR_DATA_BEGIN;
-  write = fwrite(&data_start, sizeof(uint16_t), 1, arc_ptr);
-  CHK_MACRO(write, 1, err);
+  FWRITE_MACRO(&data_start, sizeof(uint16_t), 1, arc_ptr);
 
-  // make sure to check the code
-
-  // return 
   return true;
-err:
-  perror("unable to write dir metadata");
-  return false;
 }
 
 

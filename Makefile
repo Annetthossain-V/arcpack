@@ -11,7 +11,7 @@ SOURCE != ls src/*.c
 all: build
 
 build:
-		$(CC) $(CFLAGS) $(SOURCE)
+		$(CC) $(CFLAGS) $(SOURCE) -o arcpack
 
 clean:
 		rm -f arcpack *.arc
